@@ -18,14 +18,14 @@ func create_board():
 		board.append([])
 		for x in range(0,columns):
 			var cube = Cube.instance()
-			cube.position = Vector2((x*grid_unit)+48,(y*grid_unit)+48)
+			cube.position = Vector2((x*grid_unit)+grid_unit,(y*grid_unit)+grid_unit)
 			add_child(cube)
 			board[y].append(cube)
 			
 func _ready():
 	create_board()
 	create_cubes_for_level()
-	$MoveTimer.set_wait_time(0.4)
+	$MoveTimer.set_wait_time(0.25)
 	$MoveTimer.start()
 
 func _input(event):
@@ -56,7 +56,7 @@ func check_for_bad_cubes():
 				number_of_cubes -= 1
 				
 		if bad_cubes.size() > 0:
-			for i in range(1,8):
+			for i in range(1,columns):
 				for cube in bad_cubes:
 					cube.toggle()
 				yield(get_tree().create_timer(0.1), "timeout")
@@ -72,15 +72,17 @@ func _on_Board_next_level():
 		print("game over")
 		$MoveTimer.stop()
 		emit_signal("game_over")
-	if current_level == 15:
+	if current_level == rows:
 		print("win")
 		$MoveTimer.stop()
 		emit_signal("win")
 	else:
-		current_direction *= -1
+		current_direction = -1
+		if randf() < 0.5:
+			current_direction = 1
 		current_level += 1
 		if (current_level == 4 and number_of_cubes == 3) or (current_level == 8 and number_of_cubes == 2):
 			number_of_cubes -= 1
 		create_cubes_for_level()
-		$MoveTimer.set_wait_time($MoveTimer.get_wait_time() - ($MoveTimer.get_wait_time()*0.15))
+		$MoveTimer.set_wait_time($MoveTimer.get_wait_time() - ($MoveTimer.get_wait_time()*0.11))
 		$MoveTimer.start()

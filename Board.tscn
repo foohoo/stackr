@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Board.gd" type="Script" id=1]
+[ext_resource path="res://Cube.tscn" type="PackedScene" id=2]
+
+[node name="Board" type="Node"]
+script = ExtResource( 1 )
+Cube = ExtResource( 2 )
+
+[node name="MoveTimer" type="Timer" parent="."]
+
+[connection signal="next_level" from="." to="." method="_on_Board_next_level"]
+[connection signal="timeout" from="MoveTimer" to="." method="_on_MoveTimer_timeout"]

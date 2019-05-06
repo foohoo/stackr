@@ -12,6 +12,7 @@ var number_of_cubes = 3
 var board = []
 var current_level = 1
 var current_direction = 1
+var game_over = false
 
 func create_board():
 	for y in range(0,rows):
@@ -21,6 +22,18 @@ func create_board():
 			cube.position = Vector2((x*grid_unit)+grid_unit,(y*grid_unit)+grid_unit)
 			add_child(cube)
 			board[y].append(cube)
+
+func reset():
+	number_of_cubes = 3
+	current_level = 1
+	current_direction = 1
+	game_over = false
+	$MoveTimer.set_wait_time(0.25)
+	for y in range(0,rows):
+		for x in range(0,columns):
+			board[y][x].turn_off()
+	create_cubes_for_level()
+	$MoveTimer.start()
 			
 func _ready():
 	create_board()
@@ -30,8 +43,12 @@ func _ready():
 
 func _input(event):
 	if event.is_action_pressed("ui_accept"):
-		$MoveTimer.stop()
-		check_for_bad_cubes()
+		if !game_over:
+			$MoveTimer.stop()
+			check_for_bad_cubes()
+		else:
+			game_over = false
+			reset()
 	
 func _on_MoveTimer_timeout():
 	for i in range(0, board[rows-current_level].size()-1):
@@ -68,14 +85,9 @@ func create_cubes_for_level():
 		board[rows-current_level][i+3].toggle()
 
 func _on_Board_next_level():
-	if number_of_cubes == 0:
-		print("game over")
+	if number_of_cubes == 0 || current_level == rows:
+		game_over = true
 		$MoveTimer.stop()
-		emit_signal("game_over")
-	if current_level == rows:
-		print("win")
-		$MoveTimer.stop()
-		emit_signal("win")
 	else:
 		current_direction = -1
 		if randf() < 0.5:

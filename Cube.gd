@@ -16,5 +16,10 @@ func toggle():
 		$CubeOff.set_visible(false)
 		is_on = true
 
+func turn_off():
+	$CubeOn.set_visible(false)
+	$CubeOff.set_visible(true)
+	is_on = false
+
 func is_on():
 	return is_on
